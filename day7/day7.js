@@ -1,5 +1,6 @@
 const { ChildProcess } = require("child_process");
 const fs = require("fs");
+const { sum } = require("lodash");
 const _ = require("lodash");
 
 fs.readFile("test_input.txt", "utf8", (err, data) => {
@@ -15,8 +16,8 @@ fs.readFile("input.txt", "utf8", (err, data) => {
   if (err) {
     console.log(error);
   } else {
-    //console.log(part1(data));
-    //console.log(part2(data));
+    console.log(part1(data));
+    console.log(part2(data));
   }
 });
 
@@ -70,14 +71,16 @@ function part1(data) {
 function part2(data) {
   const rules = processInput(data);
 
-  let agenda = ["shiny gold"];
-  let totalBags = 0;
-  while (agenda.length > 0) {
-    let currColor = agenda.pop();
-    for (let child in rules[currColor]) {
-      totalBags += rules[currColor][child];
-      agenda.push(child);
+  function bagsIn(color) {
+    if (_.isEmpty(rules[color])) {
+      return 0;
+    } else {
+      let sum = 0;
+      for (let child in rules[color]) {
+        sum += rules[color][child] + rules[color][child] * bagsIn(child);
+      }
+      return sum;
     }
   }
-  return totalBags;
+  return bagsIn("shiny gold");
 }
