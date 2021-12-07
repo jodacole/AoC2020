@@ -20,26 +20,27 @@ fs.readFile("test_input.txt", "utf8", (err, data) => {
   }
 });
 
-function processInput(data) {
-  let rules = {};
-  data.split("\n").map((r) => {
-    let [parentColor, childColors] = r.split(" bags contain ");
-    childColors = childColors
-      .split(",")
-      .map((child) => child.replace(/bags?\.?/, "").trim())
-      .map((child) => {
-        let o = {};
-        o[child.replace(/[0-9]/g, "").trim()] = parseInt(child, 10);
-        return o;
-      });
-    console.log(
-      `parent: ${parentColor}, child: ${JSON.stringify(childColors)}`
-    );
-    rules[parentColor] = childColors[0];
-  });
-  return rules;
+function processRuleString(ruleString) {
+  const color = ruleString.split(" bags contain ")[0];
+  const rawContents = ruleString
+    .split(" bags contain ")[1]
+    .split(",")
+    .map((child) => child.replace(/bags?\.?/, "").trim());
+  let contents = {};
+  for (let color of rawContents) {
+    if (color === "no other") {
+      break;
+    }
+    contents[color.replace(/\d/g, "").trim()] = parseInt(color, 10);
+  }
+  let ret = {};
+  ret[color] = contents;
+  return ret;
 }
 
 function part1(data) {
-  rules = processInput(data);
+  let distinctRules = data.split("\n").map(processRuleString);
+  let rules = {};
+  _.merge(rules, distinctRules);
+  return rules;
 }
