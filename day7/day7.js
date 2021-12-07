@@ -2,20 +2,20 @@ const { ChildProcess } = require("child_process");
 const fs = require("fs");
 const _ = require("lodash");
 
-// fs.readFile("input.txt", "utf8", (err, data) => {
-//   if (err) {
-//     console.log(error);
-//   } else {
-//     console.log(part1(data));
-//     console.log(part2(data));
-//   }
-// });
-
 fs.readFile("test_input.txt", "utf8", (err, data) => {
   if (err) {
     console.log(error);
   } else {
     console.log(part1(data));
+    console.log(part2(data));
+  }
+});
+
+fs.readFile("input.txt", "utf8", (err, data) => {
+  if (err) {
+    console.log(error);
+  } else {
+    //console.log(part1(data));
     //console.log(part2(data));
   }
 });
@@ -33,14 +33,51 @@ function processRuleString(ruleString) {
     }
     contents[color.replace(/\d/g, "").trim()] = parseInt(color, 10);
   }
-  let ret = {};
-  ret[color] = contents;
-  return ret;
+  return { color: color, contents: contents };
+}
+
+function processInput(data) {
+  let distinctRules = data.split("\n").map(processRuleString);
+  let rules = {};
+  for (rule of distinctRules) {
+    rules[rule.color] = rule.contents;
+  }
+  return rules;
 }
 
 function part1(data) {
-  let distinctRules = data.split("\n").map(processRuleString);
-  let rules = {};
-  _.merge(rules, distinctRules);
-  return rules;
+  const rules = processInput(data);
+  let agenda = Object.keys(rules).map((k) => [k]);
+  let canCarryGold = new Set();
+  while (!_.isEmpty(agenda)) {
+    let currPath = agenda.shift();
+    if (
+      currPath.at(currPath.length - 1) === "shiny gold" ||
+      canCarryGold.has(currPath.at(currPath.length - 1))
+    ) {
+      for (let color of currPath.slice(0, currPath.length - 1)) {
+        canCarryGold.add(color);
+      }
+    } else {
+      for (let child of Object.keys(rules[currPath.at(currPath.length - 1)])) {
+        agenda.push(currPath.concat(child));
+      }
+    }
+  }
+  return canCarryGold.size;
+}
+
+function part2(data) {
+  const rules = processInput(data);
+
+  let agenda = ["shiny gold"];
+  let totalBags = 0;
+  while (agenda.length > 0) {
+    let currColor = agenda.pop();
+    for (let child in rules[currColor]) {
+      totalBags += rules[currColor][child];
+      agenda.push(child);
+    }
+  }
+  return totalBags;
 }
