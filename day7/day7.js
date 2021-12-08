@@ -1,6 +1,4 @@
-const { ChildProcess } = require("child_process");
 const fs = require("fs");
-const { sum } = require("lodash");
 const _ = require("lodash");
 
 fs.readFile("test_input.txt", "utf8", (err, data) => {
