@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { result } = require("lodash");
 const _ = require("lodash");
 
 fs.readFile("test_input.txt", "utf8", (err, data) => {
