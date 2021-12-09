@@ -1,15 +1,6 @@
 const fs = require("fs");
 const _ = require("lodash");
 
-// fs.readFile("test_input.txt", "utf8", (err, data) => {
-//   if (err) {
-//     console.log(error);
-//   } else {
-//     console.log(part1(data));
-//     console.log(part2(data));
-//   }
-// });
-
 fs.readFile("input.txt", "utf8", (err, data) => {
   if (err) {
     console.log(error);
@@ -44,7 +35,6 @@ function part2(data) {
         .slice(lo, hi + 1)
         .sum() === invalid
     ) {
-      console.log(numbers.slice(lo, hi + 1));
       return (
         _(numbers)
           .slice(lo, hi + 1)
